@@ -1,0 +1,20 @@
+units         metal
+boundary      p p p
+atom_style    atomic
+
+pair_style    gnnp/gpu  /root/.local/share/lammps/src/ML-GNNP
+
+read_data     ./interface.data
+replicate     1 1 1
+pair_coeff    * *  matgl /AI4S/Users/zyf/ML_TEST/graphene-EC/tensornet/save/epoch_100/  H C O
+
+dump          myDump all custom 5000 xyz.lammpstrj id element x y z
+dump_modify   myDump sort id element H C O
+
+thermo_style  custom step time cpu pe ke etotal temp press vol density
+thermo        1000
+
+velocity      all create 300.0 12345
+fix           1 all nvt temp 300 300 0.1
+timestep      0.0005  
+run           2000000   
