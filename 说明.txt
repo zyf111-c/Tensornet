@@ -1,0 +1,24 @@
+TensorNet等在matgl发布的GNN MLFF与LAMMPS的安装适配
+
+跑通流程即可：https://github.com/materialyzeai/matgl/blob/main/examples/Using%20LAMMPS%20with%20MatGL.ipynb
+
+HPC上的安装步骤：
+0. module load anaconda3; conda create -n py3.10 python==3.10; conda activate py3.10 （使用时只需要load module anaconda3，并conda activate py3.11）
+1. install a working-version torch:  pip  install git+https://labgitlab.catlbattery.com/lilz05/mpvasp.git@main -i http://10.156.196.243:8081/repository/pypi-sample/simple --trusted-host 10.156.196.243 --user torch==2.3.0
+2. python library matgl:  pip install matgl==2.0.6
+3. dgl installation: https://www.dgl.ai/pages/start.html； conda install -c dglteam/label/th23_cu121 dgl； likely need to manually download dgl that is compatible to torch and python: https://data.dgl.ai/wheels/torch-2.1/repo.html
+4. lammps interface with GNN MLFF: https://github.com/advancesoftcorp/lammps； mkdir build;cd build; cmake -C ../cmake/presets/basic.cmake -D BUILD_SHARED_LIBS=on -D LAMMPS_EXCEPTIONS=on -D PKG_MC=on -D PKG_PYTHON=on -D PKG_ML-GNNP=on -D PKG_EXTRA-COMPUTE=on -D PKG_EXTRA-FIX=on -D PKG_MANYBODY=on -D PKG_EXTRA-DUMP=on -D PKG_MOLECULE=on  -D Python_EXECUTABLE="/public/home/catl-bpit-hpc30/.conda/envs/py3.11/bin/python"  -D Python_INCLUDE_DIR="/public/home/catl-bpit-hpc30/.conda/envs/py3.11/include/python3.11" ../cmake; cmake --build .; make install
+5. 可能的，要修改matgl一两行源码，帮助找到dgl版模型；未来应升级为pyg版本，则无需修改源码
+
+
+使用步骤：
+module load anaconda3
+conda activate py3.11
+lmp="/public/home/catl-bpit-hpc30/20260312_Ji_install_GNNMLFF_LAMMPS/lammps_advancesoft_202503/build/lmp"
+# modify in.lammps to point to the target GNN MLFF 
+# example run: /public/home/catl-bpit-hpc30/20260312_Ji_install_GNNMLFF_LAMMPS/installation_test/
+$lmp -in in.lammps
+
+https://github.com/materialyzeai/matgl/blob/main/examples/Fine-Tuning%20a%20M3GNet%20Potential%20on%20the%20Customized%20Dataset%20with%20DIRECT%20Sampling.ipynb
+https://github.com/materialyzeai/matcalc/blob/main/examples/NEB%20Calculations%20with%20MLIPs.ipynb
+https://github.com/CederGroupHub/chgnet/blob/main/examples/fine_tuning.ipynb
