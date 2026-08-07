@@ -1,0 +1,6 @@
+from pymatgen.io.vasp.sets import MPRelaxSet
+from pymatgen.core import Structure
+
+LZC_structure = Structure.from_file("./POSCAR")
+
+MPRelaxSet(structure=LZC_structure).write_input(".", potcar_spec=True)
